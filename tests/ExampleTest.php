@@ -1,6 +1,6 @@
 <?php
 
-namespace Seydu\EloquentMetadata;
+namespace Seydu\EloquentMetadata\Tests;
 
 class ExampleTest extends \PHPUnit\Framework\TestCase
 {
