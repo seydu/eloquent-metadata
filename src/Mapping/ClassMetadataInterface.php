@@ -16,6 +16,22 @@ namespace Seydu\EloquentMetadata\Mapping;
 interface ClassMetadataInterface
 {
     /**
+     * Sets a class information entry
+     *
+     * @param $name
+     * @param $value
+     * @return void
+     */
+    public function setInformation($name, $value);
+
+    /**
+     * Gets class information by name.
+     *
+     * @return string
+     */
+    public function getInformation($name);
+
+    /**
      * Gets the fully-qualified class name of this persistent class.
      *
      * @return string
@@ -162,6 +178,13 @@ interface ClassMetadataInterface
      * @param array $mapping
      */
     public function mapField(array $mapping);
+
+    /**
+     * @param string $type
+     * @param array $mapping
+     * @return void
+     */
+    public function mapAssociation($type, $mapping);
 
     /**
      * @param array $mapping

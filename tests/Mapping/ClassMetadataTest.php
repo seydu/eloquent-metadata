@@ -9,19 +9,20 @@
 namespace Seydu\EloquentMetadata\Tests;
 
 
+use PHPUnit\Framework\TestCase;
 use Seydu\EloquentMetadata\Mapping\ClassMetadata;
 use Seydu\EloquentMetadata\Tests\Models\Comment;
 use Seydu\EloquentMetadata\Tests\Models\Model;
 use Seydu\EloquentMetadata\Tests\Models\Post;
 
-class ClassMetadataTest extends \PHPUnit\Framework\TestCase
+class ClassMetadataTest extends TestCase
 {
     private function createClassMetadata($name = null, $tableName = null, array $data = [])
     {
         $metadata = new ClassMetadata(
-            $name ?: Model::class,
-            $tableName ?: 'model_table'
+            $name ?: Model::class
         );
+        $metadata->setInformation('table', $tableName ?: 'model_table');
         return $metadata;
     }
 
@@ -156,7 +157,7 @@ class ClassMetadataTest extends \PHPUnit\Framework\TestCase
     public function testMapOneToMany()
     {
         $metadata = $this->createClassMetadata();
-        $metadata->mapManyToOne([
+        $metadata->mapOneToMany([
             'fieldName' => 'comments',
             'targetEntity' => Comment::class,
             'mappedBy' => 'post',
@@ -170,7 +171,7 @@ class ClassMetadataTest extends \PHPUnit\Framework\TestCase
             ],
             $mapping
         );
-        $this->assertTrue($metadata->isOneToMany('post'));
+        $this->assertTrue($metadata->isOneToMany('comments'));
     }
 
     /**
@@ -221,71 +222,4 @@ class ClassMetadataTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertTrue($metadata->isManyToMany('tags'));
     }
-
-    private function addAssociation(EloquentModelMetadata $metadata, Relation $relation, MmsAnotations\Association $assocAnnotation, $name)
-    {
-        $mapping = array(
-            'fieldName' => $name,
-            'targetEntity' => get_class($relation->getRelated())
-        );
-        switch (true) {
-            case $relation instanceof EloquentRelations\BelongsTo;
-                $mapping['joinColumns'] = [
-                    $relation->getForeignKey() => [
-                        'referencedColumnName' => $relation->getOtherKey()
-                    ]
-                ];
-                $metadata->mapManyToOne($mapping);
-                break;
-            case $relation instanceof EloquentRelations\HasMany;
-                $mapping['mappedBy'] = $assocAnnotation->mappedBy;
-                $metadata->mapOneToMany($mapping);
-                break;
-            case $relation instanceof EloquentRelations\BelongsToMany;
-                $refColumn = $this->removeTabelNamePrefix(
-                    $relation->getTable(),
-                    $relation->getForeignKey()
-                );
-                $inverseRefColumn = $this->removeTabelNamePrefix(
-                    $relation->getTable(),
-                    $relation->getOtherKey()
-                );
-                $mapping['joinTable'] = [
-                    'name' => $relation->getTable(),
-                    'joinColumns' => [
-                        $refColumn => [
-                            'referencedColumnName' =>
-                                $assocAnnotation->sourceRef ?: $this->getModelIdentifier($metadata->name)
-                        ]
-                    ],
-                    'inverseJoinColumns' => [
-                        $inverseRefColumn => [
-                            'referencedColumnName' =>
-                                $assocAnnotation->destinationRef ?: $this->getModelIdentifier($mapping['targetEntity'])
-                        ]
-                    ],
-                    'connectionName' => $assocAnnotation->connectionName
-                ];
-                $metadata->mapManyToMany($mapping);
-                break;
-            default:
-                throw new MappingException(sprintf(
-                    "Relation class '%s' not handled yet, found in '%s'",
-                    get_class($relation),
-                    $metadata->getName()
-                ));
-        }
-    }
 }
-
-/*
- *
- * $mapping = [
-            'fieldName' => $column->getName(),
-            'type' => $this->getFieldType($column, $metadata),
-            'length' => $column->getLength() ?: null,
-            'nullable' => !$column->getNotnull(),
-            'default' => $column->getDefault(),
-            'virtual' => false,
-        ];
- */

@@ -41,6 +41,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     const TO_MANY = 12;
 
+    private $information = [];
+
     /**
      * READ-ONLY: The name of the entity class.
      *
@@ -242,10 +244,9 @@ class ClassMetadata implements ClassMetadataInterface
         ];
     }
 
-    public function __construct($name, $tableName)
+    public function __construct($name)
     {
         $this->name      = $name;
-        $this->tableName = $tableName;
     }
 
     /**
@@ -318,7 +319,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getTableName()
     {
-        return $this->tableName;
+        return $this->getInformation('table');
 
     }
 
@@ -572,6 +573,34 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
+     * @param string $type
+     * @param array $mapping
+     * @return void
+     * @throws MappingException
+     */
+    public function mapAssociation($type, $mapping)
+    {
+        switch ($type) {
+            case self::ONE_TO_ONE:
+                $this->mapOneToOne($mapping);
+                break;
+            case self::ONE_TO_MANY:
+                $this->mapOneToMany($mapping);
+                break;
+            case self::MANY_TO_ONE:
+                $this->mapManyToOne($mapping);
+                break;
+            case self::MANY_TO_MANY:
+                $this->mapManyToMany($mapping);
+                break;
+            default:
+                throw new MappingException(
+                    "Invalid association mapping type '$type'"
+                );
+        }
+    }
+
+    /**
      * Adds a one-to-one mapping.
      *
      * @param array $mapping The mapping.
@@ -603,10 +632,19 @@ class ClassMetadata implements ClassMetadataInterface
      * @param array $mapping The mapping.
      *
      * @return void
+     * @throws MappingException
      */
     public function mapOneToMany(array $mapping)
     {
         $mapping['type'] = self::ONE_TO_MANY;
+        //If it does not specify a 'mapped' by attribute, there should be 'joinColumns'
+        if(empty($mapping['mappedBy']) && empty($mapping['joinColumns'])) {
+            throw new MappingException(sprintf(
+                "No 'mappedBy' or 'joinColumns' attribute for association '%s' in '%s'",
+                $mapping['fieldName'],
+                $this->getName()
+            ));
+        }
         $this->_storeAssociationMapping($mapping);
     }
 
@@ -722,5 +760,28 @@ class ClassMetadata implements ClassMetadataInterface
     public function getIdentifierValues($object)
     {
         // TODO: Implement getIdentifierValues() method.
+    }
+
+    /**
+     * Sets a class information entry
+     *
+     * @param $name
+     * @param $value
+     * @return void
+     */
+    public function setInformation($name, $value)
+    {
+        $this->information[$name] = $value;
+    }
+
+    /**
+     * Gets class information by name.
+     *
+     * @param $name
+     * @return string
+     */
+    public function getInformation($name)
+    {
+        return $this->information[$name] ?? null;
     }
 }
