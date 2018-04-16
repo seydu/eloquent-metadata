@@ -21,7 +21,14 @@ use Seydu\EloquentMetadata\Tests\Models\Post;
 
 class ArrayDriverTest extends TestCase
 {
-
+    public function testHandleClass()
+    {
+        $driver = new ArrayDriver([
+            Post::class => [],
+        ]);
+        $this->assertTrue($driver->handlesClass(Post::class));
+        $this->assertFalse($driver->handlesClass(Comment::class));
+    }
 
     /**
      * Tests constructor

@@ -29,4 +29,11 @@ interface DriverInterface
      */
     public function getAllClassNames();
 
+    /**
+     * Tells if a class is handled by this driver
+     * @param string $className
+     * @return boolean
+     */
+    public function handlesClass($className);
+
 }
