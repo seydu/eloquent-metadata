@@ -86,12 +86,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     }
 
     /**
-     * Gets the class metadata descriptor for a class.
-     *
-     * @param string $className The name of the class.
-     *
-     * @return ClassMetadataInterface
-     * @throws MappingException
+     * @inheritdoc
      */
     public function getMetadataFor($className)
     {
@@ -119,26 +114,20 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         return $this->loadedMetadata[$className];
     }
 
+
     /**
-     * Checks whether the factory has the metadata for a class loaded already.
-     *
-     * @param string $className
-     *
-     * @return boolean TRUE if the metadata of the class in question is already loaded, FALSE otherwise.
+     * @inheritdoc
      */
     public function hasMetadataFor($className)
     {
-        // TODO: Implement hasMetadataFor() method.
+        return isset($this->loadedMetadata[$className]);
     }
 
     /**
-     * Sets the metadata descriptor for a specific class.
-     *
-     * @param string $className
-     * @param ClassMetadataInterface $class
+     * @inheritdoc
      */
-    public function setMetadataFor($className, ClassMetadataInterface $class)
+    public function setMetadataFor($className, ClassMetadataInterface $metadata)
     {
-        // TODO: Implement setMetadataFor() method.
+        $this->loadedMetadata[$className] = $metadata;
     }
 }
