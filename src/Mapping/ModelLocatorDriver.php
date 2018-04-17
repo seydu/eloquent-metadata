@@ -9,52 +9,67 @@
 namespace Seydu\EloquentMetadata\Mapping;
 
 
-class ArrayDriver implements DriverInterface
+class ModelLocatorDriver implements DriverInterface
 {
     /**
      * @var array
      */
-    private $configuration;
+    private $paths;
 
     /**
-     * ArrayDriver constructor.
-     * @param array $configuration List of class metadata configurations
+     * @var array|null
      */
-    public function __construct(array $configuration)
+    private $classNames;
+
+    public function __construct(array $paths)
     {
-        $this->configuration = $configuration;
+        $this->paths  = $paths;
     }
 
-    /**
-     * @param ClassMetadataInterface $metadata
-     * @param array $data
-     */
-    private function processMetadata(ClassMetadataInterface $metadata, array $data)
+    private function loadClassNames()
     {
-        foreach ($data['associations'] ?? [] as $associationMapping) {
-            $type = $associationMapping['type'];
-            $metadata->mapAssociation($type, $associationMapping);
+        if ($this->classNames !== null) {
+            return $this;
         }
-    }
 
-    /**
-     * @param ClassMetadataInterface $metadata
-     * @param array $data
-     */
-    private function processAssociations(ClassMetadataInterface $metadata, array $data)
-    {
-        foreach ($data['fields'] ?? [] as $fieldMapping) {
-            $metadata->mapField($fieldMapping);
+        if (!$this->paths) {
+            throw new MappingException("Specifying a path to your models is required");
         }
-    }
 
-    /**
-     * @param ClassMetadataInterface $metadata
-     * @param array $data
-     */
-    private function processFields(ClassMetadataInterface $metadata, array $data)
-    {
-        $metadata->setInformation('table', $data['table']);
+        $classes = [];
+        $includedFiles = [];
+        foreach ($this->paths as $path) {
+            if ( ! is_dir($path)) {
+                throw new MappingException("Model mapping path '$path' is not a valid directory");
+            }
+
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::LEAVES_ONLY
+            );
+            foreach ($iterator as $file) {
+                $sourceFile = realpath($file);
+                require_once $sourceFile;
+
+                $includedFiles[] = $sourceFile;
+            }
+        }
+
+        $declared = get_declared_classes();
+        foreach ($declared as $className) {
+            $rc = new \ReflectionClass($className);
+            $sourceFile = $rc->getFileName();
+            if (!in_array($sourceFile, $includedFiles)) {
+                continue;
+            }
+            //@todo: do we need to require models to extend Laravels' bas model?
+            //if so use a test like $rc->isSubclassOf(Model::class) before adding
+            //$className to $classes
+            $classes[] = $className;
+        }
+        $this->classNames = $classes;
+
+        return $this;
     }
 
     /**
@@ -62,13 +77,6 @@ class ArrayDriver implements DriverInterface
      */
     public function loadMetadataForClass($className, ClassMetadataInterface $metadata)
     {
-        if(!isset($this->configuration[$className])) {
-            return;
-        }
-        $data = $this->configuration[$className];
-        $this->processMetadata($metadata, $data);
-        $this->processAssociations($metadata, $data);
-        $this->processFields($metadata, $data);
     }
 
     /**
@@ -76,14 +84,6 @@ class ArrayDriver implements DriverInterface
      */
     public function getAllClassNames()
     {
-        return array_keys($this->configuration);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function handlesClass($className)
-    {
-        return isset($this->configuration[$className]);
+        return $this->loadClassNames()->classNames;
     }
 }

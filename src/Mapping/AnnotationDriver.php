@@ -8,53 +8,18 @@
 
 namespace Seydu\EloquentMetadata\Mapping;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 
-class ArrayDriver implements DriverInterface
+class AnnotationDriver implements DriverInterface
 {
     /**
-     * @var array
+     * @var AnnotationReader
      */
-    private $configuration;
+    private $reader;
 
-    /**
-     * ArrayDriver constructor.
-     * @param array $configuration List of class metadata configurations
-     */
-    public function __construct(array $configuration)
+    public function __construct(AnnotationReader $reader)
     {
-        $this->configuration = $configuration;
-    }
-
-    /**
-     * @param ClassMetadataInterface $metadata
-     * @param array $data
-     */
-    private function processMetadata(ClassMetadataInterface $metadata, array $data)
-    {
-        foreach ($data['associations'] ?? [] as $associationMapping) {
-            $type = $associationMapping['type'];
-            $metadata->mapAssociation($type, $associationMapping);
-        }
-    }
-
-    /**
-     * @param ClassMetadataInterface $metadata
-     * @param array $data
-     */
-    private function processAssociations(ClassMetadataInterface $metadata, array $data)
-    {
-        foreach ($data['fields'] ?? [] as $fieldMapping) {
-            $metadata->mapField($fieldMapping);
-        }
-    }
-
-    /**
-     * @param ClassMetadataInterface $metadata
-     * @param array $data
-     */
-    private function processFields(ClassMetadataInterface $metadata, array $data)
-    {
-        $metadata->setInformation('table', $data['table']);
+        $this->reader = $reader;
     }
 
     /**
@@ -62,13 +27,7 @@ class ArrayDriver implements DriverInterface
      */
     public function loadMetadataForClass($className, ClassMetadataInterface $metadata)
     {
-        if(!isset($this->configuration[$className])) {
-            return;
-        }
-        $data = $this->configuration[$className];
-        $this->processMetadata($metadata, $data);
-        $this->processAssociations($metadata, $data);
-        $this->processFields($metadata, $data);
+
     }
 
     /**
@@ -76,14 +35,6 @@ class ArrayDriver implements DriverInterface
      */
     public function getAllClassNames()
     {
-        return array_keys($this->configuration);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function handlesClass($className)
-    {
-        return isset($this->configuration[$className]);
+        return [];
     }
 }

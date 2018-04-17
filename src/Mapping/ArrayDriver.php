@@ -78,12 +78,4 @@ class ArrayDriver implements DriverInterface
     {
         return array_keys($this->configuration);
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function handlesClass($className)
-    {
-        return isset($this->configuration[$className]);
-    }
 }

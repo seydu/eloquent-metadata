@@ -8,31 +8,16 @@
 
 namespace Seydu\EloquentMetadata\Tests;
 
-
 use PHPUnit\Framework\TestCase;
-use Psr\Cache\CacheItemPoolInterface;
 use Seydu\EloquentMetadata\Mapping\ArrayDriver;
 use Seydu\EloquentMetadata\Mapping\ClassMetadata;
-use Seydu\EloquentMetadata\Mapping\ClassMetadataFactory;
-use Seydu\EloquentMetadata\Mapping\DriverInterface;
 use Seydu\EloquentMetadata\Tests\Models\Comment;
 use Seydu\EloquentMetadata\Tests\Models\Model;
 use Seydu\EloquentMetadata\Tests\Models\Post;
 
 class ArrayDriverTest extends TestCase
 {
-    public function testHandleClass()
-    {
-        $driver = new ArrayDriver([
-            Post::class => [],
-        ]);
-        $this->assertTrue($driver->handlesClass(Post::class));
-        $this->assertFalse($driver->handlesClass(Comment::class));
-    }
 
-    /**
-     * Tests constructor
-     */
     public function testGetAllClassNames()
     {
         $driver = new ArrayDriver([
@@ -48,9 +33,6 @@ class ArrayDriverTest extends TestCase
         $this->assertContains(Model::class, $classNames);
     }
 
-    /**
-     * Tests constructor
-     */
     public function testGetMetadataForClass()
     {
         $driver = new ArrayDriver([

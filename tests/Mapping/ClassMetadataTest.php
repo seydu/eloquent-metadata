@@ -8,7 +8,6 @@
 
 namespace Seydu\EloquentMetadata\Tests;
 
-
 use PHPUnit\Framework\TestCase;
 use Seydu\EloquentMetadata\Mapping\ClassMetadata;
 use Seydu\EloquentMetadata\Tests\Models\Comment;
@@ -26,9 +25,6 @@ class ClassMetadataTest extends TestCase
         return $metadata;
     }
 
-    /**
-     * Tests constructor
-     */
     public function testCreateClassMetadata()
     {
         $metadata = $this->createClassMetadata(Model::class,'model_table');
@@ -36,9 +32,6 @@ class ClassMetadataTest extends TestCase
         $this->assertEquals('model_table', $metadata->getTableName());
     }
 
-    /**
-     *
-     */
     public function testMapField()
     {
         $metadata = $this->createClassMetadata();
@@ -89,9 +82,6 @@ class ClassMetadataTest extends TestCase
         $this->assertCount(1, $metadata->getIdentifierFieldNames());
     }
 
-    /**
-     *
-     */
     public function testMapOneToOne()
     {
         $metadata = $this->createClassMetadata();
@@ -120,9 +110,6 @@ class ClassMetadataTest extends TestCase
         $this->assertTrue($metadata->isOneToOne('oneToOne'));
     }
 
-    /**
-     *
-     */
     public function testMapManyToOne()
     {
         $metadata = $this->createClassMetadata();
@@ -151,9 +138,6 @@ class ClassMetadataTest extends TestCase
         $this->assertTrue($metadata->isManyToOne('post'));
     }
 
-    /**
-     *
-     */
     public function testMapOneToMany()
     {
         $metadata = $this->createClassMetadata();

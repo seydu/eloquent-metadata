@@ -77,7 +77,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      */
     private function loadMetadata($className)
     {
-        if(!$this->driver->handlesClass($className)) {
+        if(!in_array($className, $this->driver->getAllClassNames())) {
             throw new MappingException("Class '$className'  not handled by driver");
         }
         $metadata = $this->newClassMetadata($className);

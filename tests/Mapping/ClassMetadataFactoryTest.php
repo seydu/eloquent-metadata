@@ -8,7 +8,6 @@
 
 namespace Seydu\EloquentMetadata\Tests;
 
-
 use Cache\Adapter\Void\VoidCachePool;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
@@ -16,7 +15,6 @@ use Psr\Cache\CacheItemPoolInterface;
 use Seydu\EloquentMetadata\Mapping\ArrayDriver;
 use Seydu\EloquentMetadata\Mapping\ClassMetadata;
 use Seydu\EloquentMetadata\Mapping\ClassMetadataFactory;
-use Seydu\EloquentMetadata\Mapping\ClassMetadataInterface;
 use Seydu\EloquentMetadata\Mapping\DriverInterface;
 use Seydu\EloquentMetadata\Mapping\MappingException;
 use Seydu\EloquentMetadata\Tests\Models\Comment;
@@ -24,6 +22,9 @@ use Seydu\EloquentMetadata\Tests\Models\Post;
 
 class ClassMetadataFactoryTest extends TestCase
 {
+    /**
+     * @return array
+     */
     private function getFixturesData()
     {
         return [
@@ -74,9 +75,6 @@ class ClassMetadataFactoryTest extends TestCase
         return $factory;
     }
 
-    /**
-     *
-     */
     public function testGetMetadataForUndefinedClass()
     {
         $this->expectException(MappingException::class);
@@ -84,9 +82,7 @@ class ClassMetadataFactoryTest extends TestCase
         $factory->getMetadataFor(Comment::class);
     }
 
-    /**
-     *
-     */
+
     public function testGetMetadataFor()
     {
         $factory = $this->createClassMetadataFactory();
