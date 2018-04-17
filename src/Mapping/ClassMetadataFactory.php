@@ -8,7 +8,6 @@
 
 namespace Seydu\EloquentMetadata\Mapping;
 
-
 use Psr\Cache\CacheItemPoolInterface;
 
 class ClassMetadataFactory implements ClassMetadataFactoryInterface
@@ -28,6 +27,11 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      */
     private $loadedMetadata;
 
+    /**
+     * ClassMetadataFactory constructor.
+     * @param DriverInterface $driver
+     * @param CacheItemPoolInterface $cache
+     */
     public function __construct(DriverInterface $driver, CacheItemPoolInterface $cache)
     {
         $this->driver         = $driver;
@@ -36,10 +40,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     }
 
     /**
-     * Forces the factory to load the metadata of all classes known to the underlying
-     * mapping driver.
-     *
-     * @return ClassMetadataInterface[] The ClassMetadata instances of all mapped classes.
+     * @inheritdoc
      */
     public function getAllMetadata()
     {
@@ -61,7 +62,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     }
 
     /**
-     * @param $className
+     * @param string $className
      * @return ClassMetadata
      */
     private function newClassMetadata($className)
@@ -70,7 +71,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     }
 
     /**
-     * @param $className
+     * @param string $className
      * @return array
      * @throws MappingException
      */
