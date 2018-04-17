@@ -31,6 +31,18 @@ class ArrayDriver implements DriverInterface
      */
     private function processMetadata(ClassMetadataInterface $metadata, array $data)
     {
+        $metadata->setInformation('table', $data['table']);
+        foreach ($data['information'] ?? [] as $name => $value) {
+            $metadata->setInformation($name, $value);
+        }
+    }
+
+    /**
+     * @param ClassMetadataInterface $metadata
+     * @param array $data
+     */
+    private function processAssociations(ClassMetadataInterface $metadata, array $data)
+    {
         foreach ($data['associations'] ?? [] as $associationMapping) {
             $type = $associationMapping['type'];
             $metadata->mapAssociation($type, $associationMapping);
@@ -41,20 +53,11 @@ class ArrayDriver implements DriverInterface
      * @param ClassMetadataInterface $metadata
      * @param array $data
      */
-    private function processAssociations(ClassMetadataInterface $metadata, array $data)
+    private function processFields(ClassMetadataInterface $metadata, array $data)
     {
         foreach ($data['fields'] ?? [] as $fieldMapping) {
             $metadata->mapField($fieldMapping);
         }
-    }
-
-    /**
-     * @param ClassMetadataInterface $metadata
-     * @param array $data
-     */
-    private function processFields(ClassMetadataInterface $metadata, array $data)
-    {
-        $metadata->setInformation('table', $data['table']);
     }
 
     /**

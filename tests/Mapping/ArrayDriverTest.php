@@ -38,6 +38,12 @@ class ArrayDriverTest extends TestCase
         $driver = new ArrayDriver([
             Post::class => [
                 'table' => 'post',
+                'information' => [
+                    'default_sort' => [
+                        'field' => 'name',
+                        'direction' => 'DESC',
+                    ],
+                ],
                 'fields' => [
                     [
                         'fieldName' => 'id',
@@ -97,5 +103,17 @@ class ArrayDriverTest extends TestCase
         $this->assertInternalType('array', $associationNames);
         $this->assertCount(1, $associationNames);
         $this->assertArraySubset(['comments'], $associationNames);
+
+
+        $defaultSort = $metadata->getInformation('default_sort');
+        $this->assertInternalType('array', $defaultSort);
+        $this->assertCount(2, $defaultSort);
+        $this->assertArraySubset(
+            [
+                'field' => 'name',
+                'direction' => 'DESC',
+            ],
+            $defaultSort
+        );
     }
 }
