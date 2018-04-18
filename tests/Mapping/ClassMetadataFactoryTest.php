@@ -17,8 +17,8 @@ use Seydu\EloquentMetadata\Mapping\ClassMetadata;
 use Seydu\EloquentMetadata\Mapping\ClassMetadataFactory;
 use Seydu\EloquentMetadata\Mapping\DriverInterface;
 use Seydu\EloquentMetadata\Mapping\MappingException;
-use Seydu\EloquentMetadata\Tests\Models\Comment;
-use Seydu\EloquentMetadata\Tests\Models\Post;
+use Seydu\Tests\EloquentMetadata\Models\Comment;
+use Seydu\Tests\EloquentMetadata\Models\Post;
 
 class ClassMetadataFactoryTest extends TestCase
 {

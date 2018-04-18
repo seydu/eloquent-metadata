@@ -9,14 +9,21 @@
 namespace Seydu\EloquentMetadata\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use PHPUnit\Framework\TestCase;
 use Seydu\EloquentMetadata\Mapping\AnnotationDriver;
 use Seydu\EloquentMetadata\Mapping\ClassMetadata;
-use Seydu\EloquentMetadata\Tests\Models\Post;
+use Seydu\Tests\EloquentMetadata\Models\Comment;
+use Seydu\Tests\EloquentMetadata\Models\Post;
 
 class AnnotationDriverTest extends TestCase
 {
-
+    protected function setUp()
+    {
+        AnnotationRegistry::registerUniqueLoader(function ($name) {
+            return class_exists($name, true);
+        });
+    }
     private function createDriver($reader = null)
     {
         if(!$reader) {
@@ -39,6 +46,8 @@ class AnnotationDriverTest extends TestCase
         $driver = $this->createDriver();
         $metadata = new ClassMetadata(Post::class);
         $driver->loadMetadataForClass(Post::class, $metadata);
-        $this->assertEquals('name', $metadata->getInformation('default_sort'));
+        $sort = $metadata->getInformation('sort');
+        $this->assertEquals('name', $sort['field']);
+        $driver->loadMetadataForClass(Comment::class, new ClassMetadata(Comment::class));
     }
 }

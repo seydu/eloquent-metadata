@@ -33,7 +33,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Seydu\\EloquentMetadata\\": "tests"
+            "Seydu\\Tests\\EloquentMetadata\\": "tests"
         }
     },
     "scripts": {

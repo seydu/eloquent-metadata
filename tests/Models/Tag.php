@@ -6,7 +6,7 @@
  * Time: 1:13 PM
  */
 
-namespace Seydu\EloquentMetadata\Tests\Models;
+namespace Seydu\Tests\EloquentMetadata\Models;
 
 
 class Tag

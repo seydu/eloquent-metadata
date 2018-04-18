@@ -9,6 +9,7 @@
 namespace Seydu\EloquentMetadata\Mapping;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Seydu\EloquentMetadata\Mapping\Annotations;
 
 class AnnotationDriver implements DriverInterface
 {
@@ -22,12 +23,30 @@ class AnnotationDriver implements DriverInterface
         $this->reader = $reader;
     }
 
+    private function processMetadata(ClassMetadataInterface $metadata, \ReflectionClass $reflectionClass)
+    {
+        $defaultSortAnnotation = $this->reader->getClassAnnotation(
+            $reflectionClass,
+            Annotations\DefaultSort::class
+        );
+        if($defaultSortAnnotation) {
+            $metadata->setInformation(
+                'sort',
+                [
+                    'field' => $defaultSortAnnotation->field,
+                    'direction' => $defaultSortAnnotation->direction
+                ]
+            );
+        }
+    }
+
     /**
      * @inheritdoc
      */
     public function loadMetadataForClass($className, ClassMetadataInterface $metadata)
     {
-
+        $reflectionClass = new \ReflectionClass($className);
+        $this->processMetadata($metadata, $reflectionClass);
     }
 
     /**

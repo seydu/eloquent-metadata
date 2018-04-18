@@ -11,9 +11,9 @@ namespace Seydu\EloquentMetadata\Tests;
 use PHPUnit\Framework\TestCase;
 use Seydu\EloquentMetadata\Mapping\ArrayDriver;
 use Seydu\EloquentMetadata\Mapping\ClassMetadata;
-use Seydu\EloquentMetadata\Tests\Models\Comment;
-use Seydu\EloquentMetadata\Tests\Models\Model;
-use Seydu\EloquentMetadata\Tests\Models\Post;
+use Seydu\Tests\EloquentMetadata\Models\Comment;
+use Seydu\Tests\EloquentMetadata\Models\Model;
+use Seydu\Tests\EloquentMetadata\Models\Post;
 
 class ArrayDriverTest extends TestCase
 {
@@ -39,7 +39,7 @@ class ArrayDriverTest extends TestCase
             Post::class => [
                 'table' => 'post',
                 'information' => [
-                    'default_sort' => [
+                    'sort' => [
                         'field' => 'name',
                         'direction' => 'DESC',
                     ],
@@ -105,7 +105,7 @@ class ArrayDriverTest extends TestCase
         $this->assertArraySubset(['comments'], $associationNames);
 
 
-        $defaultSort = $metadata->getInformation('default_sort');
+        $defaultSort = $metadata->getInformation('sort');
         $this->assertInternalType('array', $defaultSort);
         $this->assertCount(2, $defaultSort);
         $this->assertArraySubset(

@@ -10,9 +10,9 @@ namespace Seydu\EloquentMetadata\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Seydu\EloquentMetadata\Mapping\ClassMetadata;
-use Seydu\EloquentMetadata\Tests\Models\Comment;
-use Seydu\EloquentMetadata\Tests\Models\Model;
-use Seydu\EloquentMetadata\Tests\Models\Post;
+use Seydu\Tests\EloquentMetadata\Models\Comment;
+use Seydu\Tests\EloquentMetadata\Models\Model;
+use Seydu\Tests\EloquentMetadata\Models\Post;
 
 class ClassMetadataTest extends TestCase
 {
