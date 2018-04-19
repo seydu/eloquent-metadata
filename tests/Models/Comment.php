@@ -13,7 +13,7 @@ use Seydu\EloquentMetadata\Mapping\Annotations as ModelAnnotations;
 /**
  * Class Comment
  * @package Seydu\Tests\EloquentMetadata\Models
- * @ModelAnnotations\DefaultSort(field="title")
+ * @ModelAnnotations\DefaultSort(field="createdAt", direction="DESC")
  */
 class Comment
 {

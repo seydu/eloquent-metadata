@@ -48,6 +48,12 @@ class AnnotationDriverTest extends TestCase
         $driver->loadMetadataForClass(Post::class, $metadata);
         $sort = $metadata->getInformation('sort');
         $this->assertEquals('name', $sort['field']);
-        $driver->loadMetadataForClass(Comment::class, new ClassMetadata(Comment::class));
+        $this->assertEquals('ASC', $sort['direction']);
+
+        $commentMetadata = new ClassMetadata(Comment::class);
+        $driver->loadMetadataForClass(Comment::class, $commentMetadata);
+        $sort = $commentMetadata->getInformation('sort');
+        $this->assertEquals('createdAt', $sort['field']);
+        $this->assertEquals('DESC', $sort['direction']);
     }
 }
