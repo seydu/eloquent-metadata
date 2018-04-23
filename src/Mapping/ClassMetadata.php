@@ -441,7 +441,10 @@ class ClassMetadata implements ClassMetadataInterface
     public function getFieldMapping($fieldName)
     {
         if ( ! isset($this->fieldMappings[$fieldName])) {
-            throw MappingException::mappingNotFound($this->name, $fieldName);
+            throw new MappingException(sprintf(
+                "Cannot find field mapping '%s' in class '%s'",
+                $fieldName, $this->name
+            ));
         }
         return $this->fieldMappings[$fieldName];
     }
@@ -461,7 +464,10 @@ class ClassMetadata implements ClassMetadataInterface
     public function getAssociationMapping($fieldName)
     {
         if ( ! isset($this->associationMappings[$fieldName])) {
-            throw MappingException::mappingNotFound($this->name, $fieldName);
+            throw new MappingException(sprintf(
+                "Cannot find field mapping '%s' in class '%s'",
+                $fieldName, $this->name
+            ));
         }
         return $this->associationMappings[$fieldName];
     }
@@ -476,8 +482,10 @@ class ClassMetadata implements ClassMetadataInterface
         if (isset($this->fieldMappings[$fieldName]) ||
             isset($this->associationMappings[$fieldName]) ||
             isset($this->embeddedClasses[$fieldName])) {
-
-            throw MappingException::duplicateFieldMapping($this->name, $fieldName);
+            throw new MappingException(sprintf(
+                "Duplicate field mapping '%s' in class '%s'",
+                $fieldName, $this->name
+            ));
         }
     }
 

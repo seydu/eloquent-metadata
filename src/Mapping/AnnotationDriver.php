@@ -29,7 +29,7 @@ class AnnotationDriver implements DriverInterface
             $reflectionClass,
             Annotations\DefaultSort::class
         );
-        if($defaultSortAnnotation) {
+        if ($defaultSortAnnotation) {
             $metadata->setInformation(
                 'sort',
                 [
@@ -41,12 +41,102 @@ class AnnotationDriver implements DriverInterface
     }
 
     /**
+     * @param Annotations\JoinColumn[] $joinColumns
+     * @return array
+     */
+    private function processJoinColumns(array $joinColumns)
+    {
+        $columns = [];
+        foreach ($joinColumns as $joinColumn) {
+            $columns[$joinColumn->name] = [
+                'referencedColumnName' => $joinColumn->referencedColumnName,
+                'nullable' => $joinColumn->nullable
+            ];
+        }
+        return $columns;
+    }
+
+    private function mapAssociationMappingForOneToMany(
+        ClassMetadataInterface $metadata,
+        Annotations\OneToMany $annotation,
+        \ReflectionMethod $reflectionMethod
+    )
+    {
+        $mapping = [
+            'fieldName' => $reflectionMethod->getName(),
+            'targetEntity' => $annotation->targetEntity,
+            'mappedBy' => $annotation->mappedBy,
+            'inversedBy' => $annotation->inversedBy
+        ];
+        $metadata->mapOneToMany($mapping);
+    }
+
+    /**
+     * @param ClassMetadataInterface $metadata
+     * @param Annotations\ManyToOne $annotation
+     * @param \ReflectionMethod $reflectionMethod
+     * @param Annotations\JoinColumn[] $joinColumns
+     */
+    private function mapAssociationMappingForManyToOne(
+        ClassMetadataInterface $metadata,
+        Annotations\ManyToOne $annotation,
+        \ReflectionMethod $reflectionMethod,
+        array $joinColumns
+    )
+    {
+        $mapping = [
+            'fieldName' => $reflectionMethod->getName(),
+            'targetEntity' => $annotation->targetEntity,
+            'mappedBy' => $annotation->mappedBy,
+            'inversedBy' => $annotation->inversedBy,
+            'joinColumns' => $this->processJoinColumns($joinColumns),
+        ];
+        $metadata->mapManyToOne($mapping);
+    }
+    private function processAssociations(ClassMetadataInterface $metadata, \ReflectionClass $reflectionClass)
+    {
+        $associations = array();
+        $annotations = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
+        foreach ($annotations as $reflectionMethod) {
+            $annotationClasses = [
+                'OneToMany' => Annotations\OneToMany::class,
+                'ManyToOne' => Annotations\ManyToOne::class,
+            ];
+            $associationAnnotation = null;
+            foreach ($annotationClasses as $name => $class) {
+                $associationAnnotation =
+                    $this->reader->getMethodAnnotation($reflectionMethod, $class);
+                if (!$associationAnnotation) {
+                    continue;
+                }
+                $joinColumnAnnotation = $this->reader->getMethodAnnotation(
+                    $reflectionMethod,
+                    Annotations\JoinColumn::class
+                );
+                $configMethod = "mapAssociationMappingFor$name";
+                $this->$configMethod(
+                    $metadata,
+                    $associationAnnotation,
+                    $reflectionMethod,
+                    $joinColumnAnnotation ? [$joinColumnAnnotation] : []
+                );
+                break;
+            }
+            if($associationAnnotation) {
+                continue;
+            }
+        }
+        return $associations;
+    }
+
+    /**
      * @inheritdoc
      */
     public function loadMetadataForClass($className, ClassMetadataInterface $metadata)
     {
         $reflectionClass = new \ReflectionClass($className);
         $this->processMetadata($metadata, $reflectionClass);
+        $this->processAssociations($metadata, $reflectionClass);
     }
 
     /**

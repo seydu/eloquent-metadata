@@ -18,7 +18,7 @@ class ChainDriver implements DriverInterface
 
     /**
      * ChainDriver constructor.
-     * @param array $drivers List of drivers
+     * @param DriverInterface[] $drivers List of drivers
      */
     public function __construct(array $drivers)
     {

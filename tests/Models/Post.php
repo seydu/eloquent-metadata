@@ -17,5 +17,11 @@ use Seydu\EloquentMetadata\Mapping\Annotations as ModelAnnotations;
  */
 class Post
 {
+    /**
+     * @ModelAnnotations\OneToMany(targetEntity="Seydu\Tests\EloquentMetadata\Models\Comment", mappedBy="post")
+     */
+    public function comments()
+    {
 
+    }
 }

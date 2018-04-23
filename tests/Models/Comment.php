@@ -17,5 +17,12 @@ use Seydu\EloquentMetadata\Mapping\Annotations as ModelAnnotations;
  */
 class Comment
 {
+    /**
+     * @ModelAnnotations\ManyToOne(targetEntity="Seydu\Tests\EloquentMetadata\Models\Post", inversedBy="comments")
+     * @ModelAnnotations\JoinColumn(name="post_id", referencedColumnName="id", nullable=false)
+     */
+    public function post()
+    {
 
+    }
 }
