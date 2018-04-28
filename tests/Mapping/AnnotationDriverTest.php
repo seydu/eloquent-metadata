@@ -15,6 +15,7 @@ use Seydu\EloquentMetadata\Mapping\AnnotationDriver;
 use Seydu\EloquentMetadata\Mapping\ClassMetadata;
 use Seydu\Tests\EloquentMetadata\Models\Comment;
 use Seydu\Tests\EloquentMetadata\Models\Post;
+use Seydu\Tests\EloquentMetadata\Models\Tag;
 
 class AnnotationDriverTest extends TestCase
 {
@@ -61,10 +62,59 @@ class AnnotationDriverTest extends TestCase
             ],
             $commentsMapping
         );
+
+        $firstCommentMapping = $metadata->getAssociationMapping('firstComment');
+        $this->assertInternalType('array', $firstCommentMapping);
+        $this->assertArraySubset(
+            [
+                'type' => ClassMetadata::ONE_TO_ONE,
+                'fieldName' => 'firstComment',
+                'targetEntity' => Comment::class,
+                'joinColumns' => [
+                    'first_comment_id' => [
+                        'referencedColumnName' => 'id',
+                        'nullable' => true,
+                    ]
+                ]
+            ],
+            $firstCommentMapping
+        );
+
+        $tagsMapping = $metadata->getAssociationMapping('tags');
+        $this->assertInternalType('array', $tagsMapping);
+        $this->assertArraySubset(
+            [
+                'type' => ClassMetadata::MANY_TO_MANY,
+                'fieldName' => 'tags',
+                'targetEntity' => Tag::class,
+                'joinTable' => [
+                    'name' => 'post_tags',
+                    'joinColumns' => [
+                        'post_id' => [
+                            'referencedColumnName' => 'id',
+                            'nullable' => false,
+                        ],
+                    ],
+                    'inversedJoinColumns' => [
+                        'tag_id' => [
+                            'referencedColumnName' => 'id',
+                            'nullable' => false,
+                        ],
+                    ],
+                ],
+            ],
+            $tagsMapping
+        );
+
+        $expectedAssociationNames = [
+            'comments',
+            'firstComment',
+            'tags',
+        ];
         $associationNames = $metadata->getAssociationNames();
         $this->assertInternalType('array', $associationNames);
-        $this->assertCount(1, $associationNames);
-        $this->assertArraySubset(['comments'], $associationNames);
+        $this->assertCount(\count($expectedAssociationNames), $associationNames);
+        $this->assertArraySubset($expectedAssociationNames, $associationNames);
 
         $commentMetadata = new ClassMetadata(Comment::class);
         $driver->loadMetadataForClass(Comment::class, $commentMetadata);

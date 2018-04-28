@@ -93,6 +93,63 @@ class AnnotationDriver implements DriverInterface
         ];
         $metadata->mapManyToOne($mapping);
     }
+
+    /**
+     * @param ClassMetadataInterface $metadata
+     * @param Annotations\OneToOne $annotation
+     * @param \ReflectionMethod $reflectionMethod
+     * @param Annotations\JoinColumn[] $joinColumns
+     */
+    private function mapAssociationMappingForOneToOne(
+        ClassMetadataInterface $metadata,
+        Annotations\OneToOne $annotation,
+        \ReflectionMethod $reflectionMethod,
+        array $joinColumns
+    )
+    {
+        $mapping = [
+            'fieldName' => $reflectionMethod->getName(),
+            'targetEntity' => $annotation->targetEntity,
+            'mappedBy' => $annotation->mappedBy,
+            'inversedBy' => $annotation->inversedBy,
+            'joinColumns' => $this->processJoinColumns($joinColumns),
+        ];
+        $metadata->mapOneToOne($mapping);
+    }
+
+    /**
+     * @param ClassMetadataInterface $metadata
+     * @param Annotations\ManyToMany $annotation
+     * @param \ReflectionMethod $reflectionMethod
+     * @param Annotations\JoinColumn[] $joinColumns
+     */
+    private function mapAssociationMappingForManyToMany(
+        ClassMetadataInterface $metadata,
+        Annotations\ManyToMany $annotation,
+        \ReflectionMethod $reflectionMethod,
+        array $joinColumns
+    )
+    {
+        /**
+         * @var Annotations\JoinTable $joinTableAnnotation
+         */
+        $joinTableAnnotation = $this->reader->getMethodAnnotation(
+            $reflectionMethod,
+            Annotations\JoinTable::class
+        );
+        $mapping = [
+            'fieldName' => $reflectionMethod->getName(),
+            'targetEntity' => $annotation->targetEntity,
+            'mappedBy' => $annotation->mappedBy,
+            'inversedBy' => $annotation->inversedBy,
+            'joinTable' => [
+                'name' =>$joinTableAnnotation->name,
+                'joinColumns' => $this->processJoinColumns($joinTableAnnotation->joinColumns),
+                'inversedJoinColumns' => $this->processJoinColumns($joinTableAnnotation->inverseJoinColumns),
+            ],
+        ];
+        $metadata->mapManyToMany($mapping);
+    }
     private function processAssociations(ClassMetadataInterface $metadata, \ReflectionClass $reflectionClass)
     {
         $associations = array();
@@ -101,6 +158,8 @@ class AnnotationDriver implements DriverInterface
             $annotationClasses = [
                 'OneToMany' => Annotations\OneToMany::class,
                 'ManyToOne' => Annotations\ManyToOne::class,
+                'OneToOne' => Annotations\OneToOne::class,
+                'ManyToMany' => Annotations\ManyToMany::class,
             ];
             $associationAnnotation = null;
             foreach ($annotationClasses as $name => $class) {

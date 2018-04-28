@@ -24,4 +24,28 @@ class Post
     {
 
     }
+
+    /**
+     * @ModelAnnotations\OneToOne(targetEntity="Seydu\Tests\EloquentMetadata\Models\Comment")
+     * @ModelAnnotations\JoinColumn(name="first_comment_id", referencedColumnName="id", nullable=true)
+     */
+    public function firstComment()
+    {
+
+    }
+
+
+    /**
+     * @ModelAnnotations\ManyToMany(targetEntity="Seydu\Tests\EloquentMetadata\Models\Tag")
+     * @ModelAnnotations\JoinTable(name="post_tags",
+     *     joinColumns={@ModelAnnotations\JoinColumn(name="post_id", referencedColumnName="id", nullable=false)},
+     *     inverseJoinColumns={@ModelAnnotations\JoinColumn(name="tag_id", referencedColumnName="id", nullable=false)}
+     *     )
+     */
+    public function tags()
+    {
+
+    }
+
+
 }
