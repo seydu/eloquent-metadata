@@ -171,28 +171,6 @@ class ClassMetadata implements ClassMetadataInterface
      */
     private $isIdentifierComposite = false;
 
-    /**
-     *
-     * @var string
-     */
-    private $defaultSortField;
-
-    /**
-     *
-     * @var string
-     */
-    private $defaultSortDirection;
-
-    /**
-     *
-     * @var string
-     */
-    private $connectionName;
-
-    /**
-     * @var array
-     */
-    private $lifecycleHooks = [];
 
     /**
      *
@@ -214,33 +192,18 @@ class ClassMetadata implements ClassMetadataInterface
      * That means any metadata properties that are not set or empty or simply have
      * their default value are NOT serialized.
      *
-     * Parts that are also NOT serialized because they can not be properly unserialized:
-     *      - reflClass (ReflectionClass)
-     *      - reflFields (ReflectionProperty array)
      *
      * @return array The names of all the fields that should be serialized.
      */
     public function __sleep()
     {
-        // This metadata is always serialized/cached.
         return [
-            //'fieldNames',
-            //'embeddedClasses',
             'identifier',
-            'code',
             'name',
-            'namespace', // TODO: REMOVE
-            'table',
-            'rootEntityName',
-            'defaultSortField',
-            'defaultSortDirection',
-            'connectionName',
-            'connectionPath',
-            'schemaTable',
-            'lifecycleHooks',
             'associationMappings',
-            'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
+            'columnNames',
             'fieldMappings',
+            'information',
         ];
     }
 
