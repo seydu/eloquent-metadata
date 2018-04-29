@@ -18,6 +18,7 @@ use Seydu\EloquentMetadata\Mapping\ClassMetadataFactory;
 use Seydu\EloquentMetadata\Mapping\DriverInterface;
 use Seydu\EloquentMetadata\Mapping\MappingException;
 use Seydu\Tests\EloquentMetadata\Models\Comment;
+use Seydu\Tests\EloquentMetadata\Models\Model;
 use Seydu\Tests\EloquentMetadata\Models\Post;
 
 class ClassMetadataFactoryTest extends TestCase
@@ -106,6 +107,31 @@ class ClassMetadataFactoryTest extends TestCase
         $metadata = new ClassMetadata(Post::class);
         $factory->setMetadataFor(Post::class, $metadata);
         $this->assertTrue($factory->hasMetadataFor(Post::class));
+    }
+
+    public function testGetAllMetadata()
+    {
+        $driver = new ArrayDriver(array_merge(
+            $this->getFixturesData(),
+            [
+                Comment::class => [
+                    'table' => 'comment',
+                    'fields' => [],
+                    'associations' => [],
+                ],
+                Model::class => [
+                    'table' => 'model',
+                    'fields' => [],
+                    'associations' => [],
+                ],
+            ]
+        ));
+        $factory = $this->createClassMetadataFactory($driver);
+        $allMetadata = $factory->getAllMetadata();
+        $this->assertCount(3, $allMetadata);
+        $this->assertArrayHasKey(Post::class, $allMetadata);
+        $this->assertArrayHasKey(Comment::class, $allMetadata);
+        $this->assertArrayHasKey(Model::class, $allMetadata);
     }
 
     public function testGetMetadataForCacheCalls()
